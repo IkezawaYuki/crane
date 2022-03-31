@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace crane
 {
@@ -23,6 +24,59 @@ namespace crane
             workItem.Update("work update", new TimeSpan(4, 3, 0, 0));
 
             Console.WriteLine(workItem);
+
+            var rectangles = new List<Shape>
+            {
+                new Circle(),
+                new Rectangle(),
+                new Triangle()
+            };
+
+            foreach (var share in rectangles)
+            {
+                share.Draw();
+            }
+
+        }
+    }
+
+    public class Shape
+    {
+        public int X { get; private set; }
+        public int Y { get; private set; }
+        public int Height { get; set; }
+        public int Width { get; set; }
+
+        public virtual void Draw()
+        {
+            Console.WriteLine("Performing base class drawing tasks");
+        }
+    }
+
+    public class Circle : Shape
+    {
+        public override void Draw()
+        {
+            Console.WriteLine("Circle draw");
+            base.Draw();
+        }
+    }
+
+    public class Rectangle : Shape
+    {
+        public override void Draw()
+        {
+            Console.WriteLine("Rectangle draw");
+            base.Draw();
+        }
+    }
+
+    public class Triangle : Shape
+    {
+        public override void Draw()
+        {
+            Console.WriteLine("Triancle draw");
+            base.Draw();
         }
     }
 
