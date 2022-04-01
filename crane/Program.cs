@@ -5,40 +5,33 @@ namespace crane
 {
     class Apple
     {
+        static double SafeDivision(double x, double y)
+        {
+            if (y == 0)
+            {
+                throw new DivideByZeroException();
+            }
+            return x / y;
+        }
+
         static void Main(string[] arg)
         {
-            WorkItem workItem = new WorkItem("FixBug",
-                "Fix all bugs in my code branch",
-                new TimeSpan(3, 4, 0, 0));
+            double x = 94, y = 0;
+            double result;
 
-
-            ChangeRequest changeRequest = new ChangeRequest("FixBug",
-                "Fix all bugs in my code branch",
-                new TimeSpan(3, 4, 0, 0),
-                1);
-
-            Console.WriteLine(workItem);
-            
-            Console.WriteLine(changeRequest);
-
-            workItem.Update("work update", new TimeSpan(4, 3, 0, 0));
-
-            Console.WriteLine(workItem);
-
-            var rectangles = new List<Shape>
+            try
             {
-                new Circle(),
-                new Rectangle(),
-                new Triangle()
-            };
-
-            foreach (var share in rectangles)
+                result = SafeDivision(x, y);
+                Console.WriteLine("{0} divided by {1} = {2}", x, y, result);
+            }
+            catch (DivideByZeroException)
             {
-                share.Draw();
+                Console.WriteLine("Attempted divide by zero.");
             }
 
         }
     }
+
 
     public class Shape
     {
