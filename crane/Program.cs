@@ -1,34 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
+using stellar_dotnet_sdk;
 
 namespace crane
 {
     class Apple
     {
-        static double SafeDivision(double x, double y)
+        public static void Main(string[] arg)
         {
-            if (y == 0)
-            {
-                throw new DivideByZeroException();
-            }
-            return x / y;
+            
         }
 
-        static void Main(string[] arg)
+        public void GenerateAccountKeypair()
         {
-            double x = 94, y = 0;
-            double result;
+            KeyPair keyPair = KeyPair.random();
 
-            try
-            {
-                result = SafeDivision(x, y);
-                Console.WriteLine("{0} divided by {1} = {2}", x, y, result);
-            }
-            catch (DivideByZeroException)
-            {
-                Console.WriteLine("Attempted divide by zero.");
-            }
-
+            Console.WriteLine("Account ID: " + keyPair.AccountID);
+            Console.WriteLine("Secret: " + keyPair.SecretSeed);
+            
         }
     }
 
