@@ -1,20 +1,48 @@
 ﻿using System;
+using System.Threading.Tasks;
 using stellar_dotnet_sdk;
+using stellar_dotnet_sdk.responses;
 
 namespace crane
 {
     class Apple
     {
+        string publicKey = "GCPNII6HN3AI7YSRJ2CRSPXJTNGODV5ZQP3AHUDCIOLBS4PSRA5DIAL2";
+        string secretKey = "";
+
         public static void Main(string[] arg)
         {
+            // GenerateAccountKeypair();
+            GetAccountBalance();
             
         }
 
-        public void GenerateAccountKeypair()
+        public static async void GetAccountBalance()
         {
-            KeyPair keyPair = KeyPair.random();
+            Console.WriteLine("GetAccountBalance is invoked");
+            Network network = new Network("Test SDF Network ; September 2015");
+            Server server = new Server("https://horizon-testnet.stellar.org");
 
-            Console.WriteLine("Account ID: " + keyPair.AccountID);
+            KeyPair keyPair = KeyPair.FromSecretSeed("");
+
+            AccountResponse accountResponse = await server.Accounts.Account(keyPair.AccountId);
+            Console.WriteLine(accountResponse);
+
+            Balance[] balances = accountResponse.Balances;
+
+            for (int i = 0; i < balances.Length; i++)
+            {
+                Balance asset = balances[i];
+                Console.WriteLine("Asset Code: " + asset.AssetCode);
+                Console.WriteLine("Asset Amount: " + asset.BalanceString);
+            }
+        }
+
+        public static void GenerateAccountKeypair()
+        {
+            KeyPair keyPair = KeyPair.Random();
+
+            Console.WriteLine("Account ID: " + keyPair.AccountId);
             Console.WriteLine("Secret: " + keyPair.SecretSeed);
             
         }
