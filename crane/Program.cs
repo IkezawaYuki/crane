@@ -7,29 +7,57 @@ namespace crane
 {
     class Apple
     {
-        string publicKey = "GCPNII6HN3AI7YSRJ2CRSPXJTNGODV5ZQP3AHUDCIOLBS4PSRA5DIAL2";
-        string secretKey = "";
+        static string publicKey = "GCPNII6HN3AI7YSRJ2CRSPXJTNGODV5ZQP3AHUDCIOLBS4PSRA5DIAL2";
+        string secretKey = "SC3FBQHSSVM7XSEILQIFIT3IA6OMFCASUTW347XNQ3ZP3IQUXDIBSMBX";
 
         public static void Main(string[] arg)
         {
             // GenerateAccountKeypair();
-            GetAccountBalance();
-            
+            execute();
         }
 
-        public static async void GetAccountBalance()
+        public static async void execute()
+        {
+            var apple = new Apple();
+            await apple.GetAccountBalance();
+        }
+
+        public async Task SendNativeAssets()
+        {
+            Network network = new Network("");
+            Server server = new Server("");
+
+            KeyPair keyPair = KeyPair.FromSecretSeed("");
+            KeyPair destinationPair = KeyPair.FromAccountId("");
+
+            AccountResponse accountResponse = await server.Accounts.Account(keyPair.AccountId);
+
+            Account account = new Account(keyPair.AccountId, accountResponse.SequenceNumber);
+
+            Asset asset = new AssetTypeNative();
+
+            string amount = "1";
+
+        }
+
+        public async Task GetAccountBalance()
         {
             Console.WriteLine("GetAccountBalance is invoked");
             Network network = new Network("Test SDF Network ; September 2015");
             Server server = new Server("https://horizon-testnet.stellar.org");
+            Console.WriteLine(server);
 
-            KeyPair keyPair = KeyPair.FromSecretSeed("");
+            KeyPair keyPair = KeyPair.FromSecretSeed("SC3FBQHSSVM7XSEILQIFIT3IA6OMFCASUTW347XNQ3ZP3IQUXDIBSMBX");
+            Console.WriteLine(keyPair);
 
-            AccountResponse accountResponse = await server.Accounts.Account(keyPair.AccountId);
-            Console.WriteLine(accountResponse);
+            AccountResponse sourceAccountResponse = await server.Accounts.Account(keyPair.AccountId);
+            Console.WriteLine(sourceAccountResponse);
+            Console.WriteLine("0000");
 
-            Balance[] balances = accountResponse.Balances;
+            //Get the balance
+            Balance[] balances = sourceAccountResponse.Balances;
 
+            //Show the balance
             for (int i = 0; i < balances.Length; i++)
             {
                 Balance asset = balances[i];
