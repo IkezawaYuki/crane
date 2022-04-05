@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using stellar_dotnet_sdk;
 using stellar_dotnet_sdk.responses;
 
@@ -32,18 +35,34 @@ namespace crane
 
             AccountResponse accountResponse = await server.Accounts.Account(keyPair.AccountId);
 
-            Account account = new Account(keyPair.AccountId, accountResponse.SequenceNumber);
+            Account sourceAccount = new Account(keyPair.AccountId, accountResponse.SequenceNumber);
 
             Asset asset = new AssetTypeNative();
 
             string amount = "1";
 
+            PaymentOperation paymentOperation = new PaymentOperation.Builder(destinationPair, asset, amount).SetSourceAccount(sourceAccount.KeyPair).Build();
+
+            Transaction transaction = new TransactionBuilder(sourceAccount).AddOperation(paymentOperation).Build();
+
+            transaction.Sign(keyPair);
+
+            try
+            {
+                Console.WriteLine("sending transaction");
+                await server.SubmitTransaction(transaction);
+                Console.WriteLine("Seccess");
+            } catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+            }
         }
 
         public async Task GetAccountBalance()
         {
             Console.WriteLine("GetAccountBalance is invoked");
-            Network network = new Network("Test SDF Network ; September 2015");
+            Network network = Network.Test();
+            Network.Use(network);
             Server server = new Server("https://horizon-testnet.stellar.org");
             Console.WriteLine(server);
 
@@ -75,6 +94,35 @@ namespace crane
             
         }
     }
+
+    public class Slack
+    {
+        public string channel { get; set; }
+        public string username { get; set; }
+        public string text { get; set; }
+        public string icon_emoji { get; set; }
+        public string icon_url { get; set; }
+
+        Slack(string c, string u, string t, string i_e, string i_u)
+        {
+            this.channel = c;
+            this.username = u;
+            this.text = t;
+            this.icon_emoji = i_e;
+            this.icon_url = i_u;
+        }
+
+        public void Send(string uri)
+        {
+            var json = JsonSerializer.Serialize(this);
+            var client = new HttpClient();
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = client.PostAsync(uri, content).Result;
+            Console.WriteLine(response.StatusCode);
+        }
+    }
+
 
 
     public class Shape
