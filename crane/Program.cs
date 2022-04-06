@@ -95,7 +95,28 @@ namespace crane
         }
     }
 
-    public class Slack
+    public class Kimberly
+    {
+        public string url { get; set; }
+        public HttpClient client { get; set; }
+        public Kimberly(string url)
+        {
+            this.url = url;
+            this.client = new HttpClient();
+        }
+
+        public void signature()
+        {
+
+        }
+    }
+
+    public class APIClient
+    {
+        
+    }
+    
+    public class Slack : APIClient
     {
         public string channel { get; set; }
         public string username { get; set; }
