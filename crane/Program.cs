@@ -242,4 +242,25 @@ namespace crane
             this.originalItemID = originalID;
         }
     }
+
+    public class SimpleHttp
+    {
+        public static readonly HttpClient _http_client;
+
+        static SimpleHttp()
+        {
+            _http_client = new HttpClient();
+        }
+
+        public async Task<string> GetAsync(string uri)
+        {
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(uri)
+            };
+            var response = await _http_client.SendAsync(request);
+            return await response.Content.ReadAsStringAsync();
+        }
+    }
 }
