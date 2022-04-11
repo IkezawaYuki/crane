@@ -25,7 +25,99 @@ namespace crane
 
         static void WalkDirectoryTree(System.IO.DirectoryInfo root)
         {
+            System.IO.FileInfo[] files = null;
+            System.IO.DirectoryInfo[] subDirs = null;
 
+            try
+            {
+                files = root.GetFiles("*.*");
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                log.Add(e.Message);
+            }
+            catch (System.IO.DirectoryNotFoundException e)
+            {
+                log.Add(e.Message);
+            }
+
+            if (files != null)
+            {
+                foreach (System.IO.FileInfo fi in files)
+                {
+                    Console.WriteLine(fi.FullName);
+                }
+                subDirs = root.GetDirectories();
+
+                foreach (System.IO.DirectoryInfo dirInfo in subDirs)
+                {
+                    WalkDirectoryTree(dirInfo);
+                }    
+            }
+        }
+
+        public static void TraverseTree(string root)
+        {
+            Stack<string> dirs = new Stack<string>(20);
+
+            if (!System.IO.Directory.Exists(root))
+            {
+                throw new ArgumentException();
+            }
+            dirs.Push(root);
+
+            while (dirs.Count > 0)
+            {
+                string currentDir = dirs.Pop();
+                string[] subDirs;
+                try
+                {
+                    subDirs = System.IO.Directory.GetDirectories(currentDir);
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    Console.WriteLine(e.Message);
+                    continue;
+                }
+                catch (System.IO.DirectoryNotFoundException e)
+                {
+                    Console.WriteLine(e.Message);
+                    continue;
+                }
+
+                string[] files = null;
+                try
+                {
+                    files = System.IO.Directory.GetFiles(currentDir);
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    Console.WriteLine(e.Message);
+                    continue;
+                }
+                catch (System.IO.DirectoryNotFoundException e)
+                {
+                    Console.WriteLine(e.Message);
+                    continue;
+                }
+                foreach(string file in files)
+                {
+                    try
+                    {
+                        System.IO.FileInfo fi = new System.IO.FileInfo(file);
+                        Console.WriteLine("{0}: {1}, {2}", fi.Name, fi.Length, fi.CreationTime);
+                    }
+                    catch (System.IO.FileNotFoundException e)
+                    {
+                        Console.WriteLine(e.Message);
+                        continue;
+                    }
+                }
+                foreach (string str in subDirs)
+                {
+                    dirs.Push(str);
+                }
+            }
         }
     }
     
