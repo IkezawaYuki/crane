@@ -6,21 +6,18 @@ namespace crane
 {
     class Apple
     {
-        static System.Collections.Specialized.StringCollection log = new System.Collections.Specialized.StringCollection();
-        static void Main()
+        public static void Main()
         {
-            string[] drives = System.Environment.GetLogicalDrives();
-            foreach (string dr in drives)
-            {
-                System.IO.DriveInfo di = new System.IO.DriveInfo(dr);
-                if (!di.IsReady)
-                {
-                    Console.WriteLine("The drive {0} could not be read", di.Name);
-                    continue;
-                }
-                System.IO.DirectoryInfo rootDir = di.RootDirectory;
-                WalkDirectoryTree(rootDir);
-            }
+            double a = 3;
+            double b = 4;
+            Console.WriteLine($"{a}{b}", a, b);
+            Console.WriteLine($"{CalculateHypotenuse(a, b)}");
+            double CalculateHypotenuse(double leg1, double leg2) => Math.Sqrt(leg1 * leg1 + leg2 * leg2);
+
+            var xs = new int[] { 1, 2, 7, 9 };
+            var ys = new int[] { 7, 9, 12 };
+            Console.WriteLine($"{string.Join("/", xs)}");
+
         }
 
         static void WalkDirectoryTree(System.IO.DirectoryInfo root)
@@ -34,11 +31,11 @@ namespace crane
             }
             catch (UnauthorizedAccessException e)
             {
-                log.Add(e.Message);
+                //log.Add(e.Message);
             }
             catch (System.IO.DirectoryNotFoundException e)
             {
-                log.Add(e.Message);
+                //log.Add(e.Message);
             }
 
             if (files != null)
