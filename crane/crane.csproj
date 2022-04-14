@@ -7,8 +7,32 @@
 
   <ItemGroup>
     <None Remove="stellar-dotnet-sdk" />
+    <None Remove="Nethereum.Web3" />
+    <None Remove="Nethereum.Accounts" />
+    <None Remove="Nethereum.ABI" />
+    <None Remove="Nethereum.Signer" />
+    <None Remove="Nethereum.RPC" />
+    <None Remove="Nethereum.Hex" />
+    <None Remove="Nethereum.RLP" />
+    <None Remove="Nethereum.Contracts" />
+    <None Remove="Nethereum.Util" />
+    <None Remove="Nethereum.Model" />
+    <None Remove="Nethereum.KeyStore" />
+    <None Remove="Nethereum.BlockchainProcessing" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="stellar-dotnet-sdk" Version="7.2.25" />
+    <PackageReference Include="Nethereum.Web3" Version="4.3.0" />
+    <PackageReference Include="Nethereum.Accounts" Version="4.3.0" />
+    <PackageReference Include="Nethereum.ABI" Version="4.3.0" />
+    <PackageReference Include="Nethereum.Signer" Version="4.3.0" />
+    <PackageReference Include="Nethereum.RPC" Version="4.3.0" />
+    <PackageReference Include="Nethereum.Hex" Version="4.3.0" />
+    <PackageReference Include="Nethereum.RLP" Version="4.3.0" />
+    <PackageReference Include="Nethereum.Contracts" Version="4.3.0" />
+    <PackageReference Include="Nethereum.Util" Version="4.3.0" />
+    <PackageReference Include="Nethereum.Model" Version="4.3.0" />
+    <PackageReference Include="Nethereum.KeyStore" Version="4.3.0" />
+    <PackageReference Include="Nethereum.BlockchainProcessing" Version="4.3.0" />
   </ItemGroup>
 </Project>

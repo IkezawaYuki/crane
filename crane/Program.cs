@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using Nethereum.Web3.Accounts.Managed;
 
 namespace crane
 {
@@ -11,6 +13,7 @@ namespace crane
         {
             GetAccountBalance().Wait();
             Console.ReadLine();
+
         }
 
         static async Task GetAccountBalance()
@@ -21,6 +24,15 @@ namespace crane
 
             var etherAmount = Web3.Convert.FromWei(balance.Value);
             Console.WriteLine($"Balance in Ether: {etherAmount}");
+
+            string toAddress = "";
+            var transaction = web3.Eth.GetEtherTransferService()
+                .TransferEtherAndWaitForReceiptAsync(toAddress, 1.11m, 2);
+
+            var managedAccount = new ManagedAccount("", "");
+            var web3ManagedAccount = new Web3(managedAccount);
+
+            
         }
     }
 }
