@@ -3,9 +3,17 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using Nethereum.Hex.HexTypes;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using Nethereum.Web3.Accounts.Managed;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts.CQS;
+using Nethereum.Util;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Contracts;
+using Nethereum.Contracts.Extensions;
+using Nethereum.RPC.Eth.DTOs;
 
 namespace crane
 {
@@ -51,29 +59,90 @@ namespace crane
             //balance = await balanceFunction.CallAsync<int>(newAddress);
             //Console.WriteLine($"Account {newAddress} balance: {balance}");
 
+            //var senderAddress = "0x12890d2cce102216644c59daE5baed380d84830c";
+            //var password = "password";
+            //var ABI = @"[{""constant"":false,""inputs"":[{""name"":""val"",""type"":""int256""}],""name"":""multiply"",""outputs"":[{""name"":""d"",""type"":""int256""}],""type"":""function""},{""inputs"":[{""name"":""multiplier"",""type"":""int256""}],""type"":""constructor""}]";
+            //var byteCode = "0x60606040526040516020806052833950608060405251600081905550602b8060276000396000f3606060405260e060020a60003504631df4f1448114601a575b005b600054600435026060908152602090f3";
+            //var multiplier = 7;
+            //var web3 = new Web3();
+            //var unlockAccountResult = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, password, 120);
+
+            //var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(ABI, byteCode, senderAddress);
+
+            //var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+
+            //while (receipt == null)
+            //{
+            //    Thread.Sleep(5000);
+            //    receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+            //}
+
+            //var contractAddress = receipt.ContractAddress;
+            //var contract = web3.Eth.GetContract(ABI, contractAddress);
+
+            //var multiplyFunction = contract.GetFunction("multiply");
+            //var result = await multiplyFunction.CallAsync<int>(5);
+
             var senderAddress = "0x12890d2cce102216644c59daE5baed380d84830c";
             var password = "password";
-            var ABI = @"[{""constant"":false,""inputs"":[{""name"":""val"",""type"":""int256""}],""name"":""multiply"",""outputs"":[{""name"":""d"",""type"":""int256""}],""type"":""function""},{""inputs"":[{""name"":""multiplier"",""type"":""int256""}],""type"":""constructor""}]";
-            var byteCode = "0x60606040526040516020806052833950608060405251600081905550602b8060276000396000f3606060405260e060020a60003504631df4f1448114601a575b005b600054600435026060908152602090f3";
-            var multiplier = 7;
-            var web3 = new Web3();
-            var unlockAccountResult = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, password, 120);
+            var abi = @"[{'constant':false,'inputs':[{'name':'a','type':'int256'}],'name':'multiply','outputs':[{'name':'r','type':'int256'}],'type':'function'},{'inputs':[{'name':'multiplier','type':'int256'}],'type':'constructor'},{'anonymous':false,'inputs':[{'indexed':true,'name':'a','type':'int256'},{'indexed':true,'name':'sender','type':'address'},{'indexed':false,'name':'result','type':'int256'}],'name':'Multiplied','type':'event'}]";
+            var byteCode = "0x6060604052604051602080610104833981016040528080519060200190919050505b806000600050819055505b5060ca8061003a6000396000f360606040526000357c0100000000000000000000000000000000000000000000000000000000900480631df4f144146037576035565b005b604b60048080359060200190919050506061565b6040518082815260200191505060405180910390f35b60006000600050548202905080503373ffffffffffffffffffffffffffffffffffffffff16827f841774c8b4d8511a3974d7040b5bc3c603d304c926ad25d168dacd04e25c4bed836040518082815260200191505060405180910390a380905060c5565b91905056";
 
-            var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(ABI, byteCode, senderAddress);
+            var multiplier = 8;
+            var web3 = new Web3();
+            var unlockResult = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, password, new HexBigInteger(120));
+
+            var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(abi, byteCode, senderAddress, new HexBigInteger(9000), multiplier);
+
+            //var receipt = await MineAndGetReceiptAsync(web3, transactionHash);
+            TransactionReceipt receipt = null;
+            var contractAddress = receipt.ContractAddress;
+            var contract = web3.Eth.GetContract(abi, contractAddress);
+            var multiplyFunction = contract.GetFunction("multiply");
+            var multiplyEvent = contract.GetEvent("Multiplied");
+
+            var filterAll = await multiplyEvent.CreateFilterAsync();
+            var filter7 = await multiplyEvent.CreateFilterAsync(7);
+
+            transactionHash = await multiplyFunction.SendTransactionAsync(senderAddress, 7);
+            transactionHash = await multiplyFunction.SendTransactionAsync(senderAddress, 8);
+
+            receipt = await MineAndGetReceiptAsync(web3, transactionHash);
+
+            var log = await multiplyEvent.GetFilterChangesAsync<MultipliedEvent>(filterAll);
+            var log7 = await multiplyEvent.GetFilterChangesAsync<MultipliedEvent>(filter7);
+
+
+
+        }
+
+        public class MultipliedEvent
+        {
+            [Parameter("int", "a", 1, true)]
+            public int MultiplicationInput { get; set; }
+
+            [Parameter("address", "sender", 2, true)]
+            public string Sender { get; set; }
+
+            [Parameter("int", "result", 3, false)]
+            public int Result { get; set; }
+
+        }
+
+        public async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash)
+        {
+            var miningResult = await web3.Miner.Start.SendRequestAsync(6);
 
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
 
             while (receipt == null)
             {
-                Thread.Sleep(5000);
+                Thread.Sleep(1000);
                 receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
             }
 
-            var contractAddress = receipt.ContractAddress;
-            var contract = web3.Eth.GetContract(ABI, contractAddress);
-
-            var multiplyFunction = contract.GetFunction("multiply");
-            var result = await multiplyFunction.CallAsync<int>(5);
+            miningResult = await web3.Miner.Stop.SendRequestAsync();
+            return receipt;
         }
     }
 }
