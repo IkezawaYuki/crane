@@ -24,6 +24,18 @@ namespace crane
             Execute().Wait();
         }
 
+        public static void ShowEachDistinctString(IEnumerable<string> strings)
+        {
+            var shown = new HashSet<string>();
+            foreach(string s in strings)
+            {
+                if (shown.Add(s))
+                {
+                    Console.WriteLine(s);
+                }
+            }
+        }
+
         static async Task Execute()
         {
             //var uri = "http://testchain.nethereum.com:8545";
