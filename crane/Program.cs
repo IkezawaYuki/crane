@@ -14,6 +14,7 @@ using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.Contracts;
 using Nethereum.Contracts.Extensions;
 using Nethereum.RPC.Eth.DTOs;
+using System.IO;
 
 namespace crane
 {
@@ -22,7 +23,24 @@ namespace crane
         static void Main(string[] args)
         {
             Execute().Wait();
+
+            try
+            {
+                using(StreamReader r = new StreamReader(@"C:¥Temp¥File.txt"))
+                {
+                    while(!r.EndOfStream)
+                    {
+                        Console.WriteLine(r.ReadLine());
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("ファイルがみつかりません");
+            }
         }
+
+
 
         public static void ShowEachDistinctString(IEnumerable<string> strings)
         {
